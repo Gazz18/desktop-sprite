@@ -42,9 +42,9 @@ const defaultSettings = {
   // LLM 配置
   llm: {
     enabled: true,
-    baseURL: process.env.LLM_BASE_URL || 'https://ai-gateway.gzmiyuan.com/v1',
+    baseURL: process.env.LLM_BASE_URL || 'https://api.openai.com/v1',
     apiKey: process.env.LLM_API_KEY || '',  // 通过环境变量或设置面板配置
-    model: 'qwen3.8-flash'  // 蜜源网关支持 qwen3.8-flash
+    model: process.env.LLM_MODEL || 'gpt-3.5-turbo'
   },
   
   // 窗口位置（自动保存）
