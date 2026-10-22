@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>狸宝桌宠</title>
+  <link rel="stylesheet" href="bubble.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: transparent;
+      user-select: none;
+    }
+
+    /* 需求2 兜底：隐藏 l2d-widget 残留的蓝色 tips 浮层（内联含 96,165,250） */
+    .l2d-root [style*="96,165"] { display: none !important; }
+
+    /* 画布整体上移，底部腾出输入框空间，避免输入框遮挡狸宝 */
+    .l2d-root { bottom: 55px !important; }
+
+    /* 拖拽区：只在顶部未被模型遮挡的部分 */
+    #drag-handle {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 40px;
+      -webkit-app-region: drag;
+      z-index: 20000;
+    }
+
+    /* 输入区必须高于 l2d-widget 自建容器的 z-index:9999 */
+    #chat-input-container {
+      position: fixed;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 250px;
+      display: none;               /* 默认隐藏，点击猫（热点）才出现 */
+      align-items: center;
+      /* 整体是一个统一粉色胶囊：输入框透明、猫爪按钮贴合右端 */
+      padding: 2px 2px 2px 14px;
+      background: rgba(255, 178, 198, 1);
+      border-radius: 22px;
+      box-shadow: 0 2px 10px rgba(255, 158, 191, 0.45);
+      z-index: 20001;
+      pointer-events: auto;
+      -webkit-app-region: no-drag;
+    }
+
+    #chat-input-container.show { display: flex; }
+
+    /* 需求3：输入框本身透明，由容器统一粉色，视觉与气泡/按钮成一体 */
+    #chat-input {
+      flex: 1;
+      min-width: 0;
+      padding: 6px 0;
+      border: none;
+      background: transparent;
+      font-size: 13px;
+      color: #fff;
+      outline: none;
+      -webkit-app-region: no-drag;
+      font-family: 'Microsoft YaHei', 'PingFang SC', 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif;
+    }
+
+    #chat-input::placeholder { color: rgba(255, 255, 255, 0.9); }
+
+    /* 需求6：猫爪按钮 - 内嵌 SVG 绘制 4 趾垫 + 主掌的完整爪形（无文字，爪形居中） */
+    #send-btn {
+      position: relative;
+      width: 48px;
+      height: 46px;
+      margin: 0 0 0 2px;
+      border: none;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cellipse cx='24' cy='44' rx='11' ry='14' transform='rotate(-18 24 44)' fill='%23ff6f9e'/%3E%3Cellipse cx='44' cy='33' rx='11' ry='14' transform='rotate(-6 44 33)' fill='%23ff6f9e'/%3E%3Cellipse cx='63' cy='34' rx='11' ry='14' transform='rotate(6 63 34)' fill='%23ff6f9e'/%3E%3Cellipse cx='80' cy='47' rx='10' ry='13' transform='rotate(18 80 47)' fill='%23ff6f9e'/%3E%3Cpath d='M50 52 C30 52 20 68 26 82 C31 93 69 93 74 82 C80 68 70 52 50 52 Z' fill='%23ff6f9e'/%3E%3C/svg%3E") no-repeat center / contain;
+      cursor: pointer;
+      -webkit-app-region: no-drag;
+      transition: filter 0.15s, opacity 0.15s;
+    }
+
+    #send-btn:hover { filter: brightness(0.93); }
+    #send-btn:active { filter: brightness(0.85); }
+    #send-btn:disabled { filter: grayscale(0.5); opacity: 0.6; cursor: default; }
+  </style>
+</head>
+<body>
+  <!-- l2d-widget 会自行创建 fixed 容器挂到 body，故此处不预留 canvas -->
+  <div id="drag-handle"></div>
+  <div id="bubble" class="bubble hidden"></div>
+  <div id="chat-input-container">
+    <input type="text" id="chat-input" placeholder="跟狸宝说说吧" />
+    <button id="send-btn" aria-label="发送"></button>
+  </div>
+
+  <script src="../../assets/vendor/l2d-widget.min.js"></script>
+  <script src="bubble.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

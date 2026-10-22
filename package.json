@@ -1,0 +1,36 @@
+{
+  "name": "desktop-pet",
+  "version": "1.0.0",
+  "description": "桌面精灵 - Live2D 动态立绘 + 定时提醒 + AI 对话",
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "fetch-models": "node scripts/fetch-models.mjs",
+    "dist": "electron-builder --win portable"
+  },
+  "keywords": ["desktop-pet", "live2d", "electron"],
+  "author": "Desktop Pet",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "dependencies": {
+    "l2d-widget": "^0.1.2"
+  },
+  "build": {
+    "appId": "com.desktop-pet.app",
+    "productName": "Desktop Pet",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "portable"
+    }
+  }
+}

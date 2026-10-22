@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>桌面精灵 - 设置</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+    
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #ddd;
+    }
+    
+    .tab {
+      padding: 10px 20px;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      font-size: 14px;
+      color: #666;
+      transition: all 0.2s;
+    }
+    
+    .tab:hover {
+      color: #333;
+    }
+    
+    .tab.active {
+      color: #4a90e2;
+      border-bottom-color: #4a90e2;
+    }
+    
+    .panel {
+      display: none;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .panel.active {
+      display: block;
+    }
+    
+    .form-group {
+      margin-bottom: 16px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+      color: #333;
+      font-weight: 500;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #4a90e2;
+    }
+    
+    .form-group textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+    
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .checkbox-group input[type="checkbox"] {
+      width: auto;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .btn-primary {
+      background: #4a90e2;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #357abd;
+    }
+    
+    .btn-secondary {
+      background: #e0e0e0;
+      color: #333;
+    }
+    
+    .btn-secondary:hover {
+      background: #d0d0d0;
+    }
+    
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .reminder-item {
+      background: #f9f9f9;
+      padding: 12px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    
+    .reminder-item .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    
+    .reminder-item .title {
+      font-weight: 500;
+    }
+    
+    .status {
+      padding: 8px 12px;
+      border-radius: 4px;
+      margin-top: 10px;
+      font-size: 13px;
+    }
+    
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+    }
+  </style>
+</head>
+<body>
+  <div class="tabs">
+    <button class="tab active" data-panel="appearance">形象</button>
+    <button class="tab" data-panel="persona">人设</button>
+    <button class="tab" data-panel="reminders">提醒</button>
+    <button class="tab" data-panel="llm">对话</button>
+  </div>
+  
+  <!-- 形象设置 -->
+  <div class="panel active" id="panel-appearance">
+    <div class="form-group">
+      <label>模型路径（URL 或本地路径）</label>
+      <input type="text" id="model-path" placeholder="https://model.hacxy.cn/cat-black/model.json" />
+    </div>
+    <div class="form-group">
+      <label>缩放比例</label>
+      <input type="number" id="scale" min="0.5" max="2" step="0.1" value="1" />
+    </div>
+    <div class="form-group checkbox-group">
+      <input type="checkbox" id="always-on-top" checked />
+      <label for="always-on-top">窗口置顶</label>
+    </div>
+  </div>
+  
+  <!-- 人设设置 -->
+  <div class="panel" id="panel-persona">
+    <div class="form-group">
+      <label>预设人设</label>
+      <select id="persona-preset">
+        <option value="genki-girl">元气少女</option>
+        <option value="cool-cat">高冷猫娘</option>
+        <option value="gentle-butler">温柔管家</option>
+        <option value="programmer-colleague">程序员同事</option>
+        <option value="custom">自定义</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>角色名</label>
+      <input type="text" id="persona-name" placeholder="狸宝" />
+    </div>
+    <div class="form-group">
+      <label>性格描述</label>
+      <textarea id="persona-personality" placeholder="元气活泼，喜欢撒娇"></textarea>
+    </div>
+    <div class="form-group">
+      <label>说话语气</label>
+      <input type="text" id="persona-tone" placeholder="可爱、俏皮" />
+    </div>
+    <div class="form-group">
+      <label>口头禅</label>
+      <input type="text" id="persona-catchphrase" placeholder="喵~" />
+    </div>
+    <div class="form-group">
+      <label>对用户的称呼</label>
+      <input type="text" id="persona-user-title" placeholder="主人" />
+    </div>
+  </div>
+  
+  <!-- 提醒设置 -->
+  <div class="panel" id="panel-reminders">
+    <div class="reminder-item">
+      <div class="header">
+        <span class="title">早上上班提醒</span>
+        <div class="checkbox-group">
+          <input type="checkbox" id="morningWork-enabled" checked />
+          <label for="morningWork-enabled">启用</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>时间</label>
+        <input type="time" id="morningWork-time" value="09:30" />
+      </div>
+      <div class="form-group">
+        <label>提醒文案</label>
+        <input type="text" id="morningWork-text" value="新的一天开始啦，一起加油喵~" />
+      </div>
+    </div>
+    
+    <div class="reminder-item">
+      <div class="header">
+        <span class="title">午饭午休提醒</span>
+        <div class="checkbox-group">
+          <input type="checkbox" id="lunch-enabled" checked />
+          <label for="lunch-enabled">启用</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>时间</label>
+        <input type="time" id="lunch-time" value="12:00" />
+      </div>
+      <div class="form-group">
+        <label>提醒文案</label>
+        <input type="text" id="lunch-text" value="该吃午饭啦，记得好好休息哦~" />
+      </div>
+    </div>
+    
+    <div class="reminder-item">
+      <div class="header">
+        <span class="title">下午上班提醒</span>
+        <div class="checkbox-group">
+          <input type="checkbox" id="afternoonWork-enabled" checked />
+          <label for="afternoonWork-enabled">启用</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>时间</label>
+        <input type="time" id="afternoonWork-time" value="13:30" />
+      </div>
+      <div class="form-group">
+        <label>提醒文案</label>
+        <input type="text" id="afternoonWork-text" value="午休结束啦，下午也要元气满满哦~" />
+      </div>
+    </div>
+    
+    <div class="reminder-item">
+      <div class="header">
+        <span class="title">下班提醒</span>
+        <div class="checkbox-group">
+          <input type="checkbox" id="offwork-enabled" checked />
+          <label for="offwork-enabled">启用</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>时间</label>
+        <input type="time" id="offwork-time" value="19:30" />
+      </div>
+      <div class="form-group">
+        <label>提醒文案</label>
+        <input type="text" id="offwork-text" value="辛苦一天啦，回家好好休息吧~" />
+      </div>
+    </div>
+    
+    <div class="reminder-item">
+      <div class="header">
+        <span class="title">站立提醒</span>
+        <div class="checkbox-group">
+          <input type="checkbox" id="standup-enabled" checked />
+          <label for="standup-enabled">启用</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>间隔（分钟）</label>
+        <input type="number" id="standup-interval" min="10" max="120" value="50" />
+      </div>
+      <div class="form-group">
+        <label>提醒文案</label>
+        <input type="text" id="standup-text" value="站起来活动一下吧，伸个懒腰~" />
+      </div>
+    </div>
+  </div>
+  
+  <!-- LLM 对话设置 -->
+  <div class="panel" id="panel-llm">
+    <div class="form-group checkbox-group">
+      <input type="checkbox" id="llm-enabled" />
+      <label for="llm-enabled">启用 AI 对话</label>
+    </div>
+    <div class="form-group">
+      <label>API Base URL</label>
+      <input type="text" id="llm-base-url" placeholder="https://api.openai.com/v1" />
+    </div>
+    <div class="form-group">
+      <label>API Key</label>
+      <input type="password" id="llm-api-key" placeholder="sk-..." />
+    </div>
+    <div class="form-group">
+      <label>模型名称</label>
+      <input type="text" id="llm-model" placeholder="gpt-3.5-turbo" />
+    </div>
+    <button class="btn btn-secondary" id="test-llm">测试连接</button>
+    <div id="llm-status"></div>
+  </div>
+  
+  <div class="btn-group">
+    <button class="btn btn-primary" id="save-btn">保存</button>
+    <button class="btn btn-secondary" id="cancel-btn">取消</button>
+  </div>
+  
+  <script src="settings.js"></script>
+</body>
+</html>

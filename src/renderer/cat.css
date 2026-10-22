@@ -1,0 +1,254 @@
+/* 橘猫样式 - 纯橘色 */
+.cat-container {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+
+/* 猫咪身体 - 纯橘色 */
+.cat-body {
+  position: absolute;
+  width: 120px;
+  height: 100px;
+  background: linear-gradient(135deg, #FFB366 0%, #FFA500 50%, #FF8C00 100%);
+  border-radius: 50% 50% 45% 45%;
+  left: 40px;
+  top: 60px;
+  box-shadow: inset -5px -5px 15px rgba(0,0,0,0.1);
+}
+
+/* 头部 */
+.cat-head {
+  position: absolute;
+  width: 90px;
+  height: 80px;
+  background: linear-gradient(135deg, #FFB366 0%, #FFA500 100%);
+  border-radius: 50%;
+  left: 55px;
+  top: 20px;
+  z-index: 2;
+}
+
+/* 耳朵 */
+.ear {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-bottom: 25px solid #FFA500;
+  z-index: 3;
+}
+
+.ear-left {
+  left: 5px;
+  top: -10px;
+  transform: rotate(-15deg);
+}
+
+.ear-right {
+  left: 60px;
+  top: -10px;
+  transform: rotate(15deg);
+}
+
+.ear-inner {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 15px solid #FFB6C1;
+}
+
+.ear-left-inner {
+  left: 12px;
+  top: -5px;
+  transform: rotate(-15deg);
+}
+
+.ear-right-inner {
+  left: 67px;
+  top: -5px;
+  transform: rotate(15deg);
+}
+
+/* 眼睛 */
+.eye {
+  position: absolute;
+  width: 12px;
+  height: 14px;
+  background: #333;
+  border-radius: 50%;
+  top: 25px;
+  z-index: 4;
+}
+
+.eye-left {
+  left: 20px;
+}
+
+.eye-right {
+  left: 58px;
+}
+
+.eye::after {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: white;
+  border-radius: 50%;
+  top: 2px;
+  left: 2px;
+}
+
+/* 鼻子 */
+.nose {
+  position: absolute;
+  width: 8px;
+  height: 6px;
+  background: #FF69B4;
+  border-radius: 50%;
+  left: 41px;
+  top: 40px;
+  z-index: 4;
+}
+
+/* 嘴巴 */
+.mouth {
+  position: absolute;
+  width: 20px;
+  height: 10px;
+  border: 2px solid #333;
+  border-top: none;
+  border-radius: 0 0 20px 20px;
+  left: 35px;
+  top: 48px;
+  z-index: 4;
+}
+
+/* 胡须 */
+.whisker {
+  position: absolute;
+  width: 30px;
+  height: 1px;
+  background: #666;
+  top: 45px;
+  z-index: 4;
+}
+
+.whisker-left-1 { left: -15px; transform: rotate(-10deg); }
+.whisker-left-2 { left: -15px; top: 50px; }
+.whisker-left-3 { left: -15px; top: 55px; transform: rotate(10deg); }
+.whisker-right-1 { left: 75px; transform: rotate(10deg); }
+.whisker-right-2 { left: 75px; top: 50px; }
+.whisker-right-3 { left: 75px; top: 55px; transform: rotate(-10deg); }
+
+/* 前爪 */
+.paw-front {
+  position: absolute;
+  width: 25px;
+  height: 35px;
+  background: linear-gradient(135deg, #FFB366 0%, #FFA500 100%);
+  border-radius: 50% 50% 40% 40%;
+  top: 130px;
+  z-index: 2;
+}
+
+.paw-front-left {
+  left: 55px;
+}
+
+.paw-front-right {
+  left: 120px;
+}
+
+/* 后爪 */
+.paw-back {
+  position: absolute;
+  width: 30px;
+  height: 25px;
+  background: linear-gradient(135deg, #FFB366 0%, #FFA500 100%);
+  border-radius: 40% 40% 50% 50%;
+  top: 140px;
+  z-index: 1;
+}
+
+.paw-back-left {
+  left: 45px;
+}
+
+.paw-back-right {
+  left: 125px;
+}
+
+/* 尾巴 - 纯橘色 */
+.tail {
+  position: absolute;
+  width: 60px;
+  height: 15px;
+  background: linear-gradient(90deg, #FFA500 0%, #FFB366 100%);
+  border-radius: 50%;
+  right: 10px;
+  top: 110px;
+  transform-origin: left center;
+  animation: tail-wag 2s ease-in-out infinite;
+  z-index: 0;
+}
+
+.tail::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: #FFA500;
+  border-radius: 50%;
+  right: -5px;
+  top: -2px;
+}
+
+/* 尾巴动画 */
+@keyframes tail-wag {
+  0%, 100% { transform: rotate(-20deg); }
+  50% { transform: rotate(20deg); }
+}
+
+@keyframes tail-wag-fast {
+  0%, 100% { transform: rotate(-35deg); }
+  50% { transform: rotate(35deg); }
+}
+
+@keyframes tail-wag-slow {
+  0%, 100% { transform: rotate(-10deg); }
+  50% { transform: rotate(10deg); }
+}
+
+/* 舔毛动画 */
+@keyframes lick {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-10deg) translateX(-5px); }
+  75% { transform: rotate(10deg) translateX(5px); }
+}
+
+.cat-head.licking {
+  animation: lick 3s ease-in-out infinite;
+}
+
+/* 情绪状态 */
+.cat-container.happy .tail {
+  animation: tail-wag-fast 0.5s ease-in-out infinite;
+}
+
+.cat-container.calm .tail {
+  animation: tail-wag-slow 4s ease-in-out infinite;
+}
+
+.cat-container.alert .tail {
+  animation: tail-wag 0.8s ease-in-out infinite;
+}
+
+/* 点按时的反应 */
+.cat-container:active .cat-head {
+  transform: scale(0.95);
+}

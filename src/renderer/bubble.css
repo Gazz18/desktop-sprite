@@ -1,0 +1,68 @@
+/* 气泡样式 - 粉色主题，与对话框统一 */
+.bubble {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  /* bottom 由 JS 依据模型高度动态设为 模型高 + 10px；此为默认兜底 */
+  bottom: 310px;
+  min-width: 60px;
+  padding: 8px 14px;
+  background: rgba(255, 178, 198, 1);
+  border: none;
+  border-radius: 16px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(255, 158, 191, 0.5);
+  z-index: 20000;
+  opacity: 0;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  /* 气泡宽度自适应内容：一行就窄，两行才变宽；超出 max-width 自然换行 */
+  width: fit-content;
+  max-width: 220px;
+  white-space: normal;
+  text-align: left;
+  word-break: break-word;
+  pointer-events: none;
+  /* 中文 + 英文 + emoji 全覆盖 */
+  font-family: 'Microsoft YaHei', 'PingFang SC', 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif;
+}
+
+/* 箭头居中，指向猫猫 */
+.bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid rgba(255, 178, 198, 1);
+}
+
+.bubble.hidden {
+  opacity: 0;
+  transform: translateX(-50%) translateY(-6px);
+  pointer-events: none;
+}
+
+/* 定时提醒样式：更醒目 */
+.bubble.reminder {
+  font-size: 15px;
+  font-weight: 600;
+  padding: 10px 18px;
+  background: rgba(255, 140, 170, 1);
+  box-shadow: 0 4px 16px rgba(255, 120, 160, 0.6);
+  animation: reminderPulse 0.6s ease-in-out;
+}
+
+.bubble.reminder::after {
+  border-top-color: rgba(255, 140, 170, 1);
+}
+
+@keyframes reminderPulse {
+  0%, 100% { transform: translateX(-50%) scale(1); }
+  50% { transform: translateX(-50%) scale(1.08); }
+}
