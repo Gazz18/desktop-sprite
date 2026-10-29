@@ -48,6 +48,9 @@ function loadSettingsToForm() {
   document.getElementById('standup-enabled').checked = currentSettings.reminders.standup?.enabled !== false;
   document.getElementById('standup-interval').value = currentSettings.reminders.standup?.interval || 50;
   document.getElementById('standup-text').value = currentSettings.reminders.standup?.text || '站起来活动一下吧，伸个懒腰~';
+
+  // 通用
+  document.getElementById('auto-launch').checked = currentSettings.general?.autoLaunch !== false;
   
   // LLM
   document.getElementById('llm-enabled').checked = currentSettings.llm?.enabled || false;
@@ -59,10 +62,16 @@ function loadSettingsToForm() {
 // 从表单收集设置
 function collectSettingsFromForm() {
   return {
+    // configVersion 必须原样带回去：丢了会被当成旧配置，每次启动都被默认值覆盖掉用户改的提醒/模型
+    configVersion: currentSettings.configVersion,
     appearance: {
       modelPath: document.getElementById('model-path').value,
       scale: parseFloat(document.getElementById('scale').value) || 1,
       alwaysOnTop: document.getElementById('always-on-top').checked
+    },
+    general: {
+      ...currentSettings.general,
+      autoLaunch: document.getElementById('auto-launch').checked
     },
     persona: {
       preset: document.getElementById('persona-preset').value,
@@ -130,9 +139,14 @@ function bindEvents() {
   // 保存按钮
   document.getElementById('save-btn').addEventListener('click', async () => {
     const newSettings = collectSettingsFromForm();
-    await window.desktopPet.setSettings(newSettings);
-    currentSettings = newSettings;
-    alert('设置已保存！');
+    const saved = await window.desktopPet.setSettings(newSettings);
+    if (saved) {
+      currentSettings = newSettings;
+      alert('设置已保存！');
+    } else {
+      // 不更新 currentSettings：没存上的值不能当作已生效的基线
+      alert('保存失败：settings.json 当前无法解析，为保护原有配置未写入。\n同目录下的 settings.json.bad-* 是损坏前的备份，可用它恢复。');
+    }
   });
   
   // 取消按钮

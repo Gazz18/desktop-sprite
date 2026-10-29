@@ -182,7 +182,8 @@
   <div class="panel active" id="panel-appearance">
     <div class="form-group">
       <label>模型路径（URL 或本地路径）</label>
-      <input type="text" id="model-path" placeholder="https://model.hacxy.cn/cat-black/model.json" />
+      <input type="text" id="model-path" placeholder="petres://models/cat-white/model.json（本地内置，离线可用）" />
+      <small style="color:#888;font-size:12px">默认优先用本地内置模型；跑过 npm run fetch-models 后断网也能显示。改成 https:// 开头可换在线模型。</small>
     </div>
     <div class="form-group">
       <label>缩放比例</label>
@@ -191,6 +192,10 @@
     <div class="form-group checkbox-group">
       <input type="checkbox" id="always-on-top" checked />
       <label for="always-on-top">窗口置顶</label>
+    </div>
+    <div class="form-group checkbox-group">
+      <input type="checkbox" id="auto-launch" checked />
+      <label for="auto-launch">开机自启（重启电脑后狸宝自己回来）</label>
     </div>
   </div>
   

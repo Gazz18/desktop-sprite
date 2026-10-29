@@ -22,6 +22,20 @@
 npm install
 ```
 
+### 拉取模型（推荐，离线可用）
+
+默认从远程 CDN 加载 Live2D 模型，断网 / CDN 不可达时狸宝会“消失”。
+执行一次下面的命令把模型拉到本地 `assets/models/cat-white/`，之后会**优先用本地模型**：
+
+```bash
+npm run fetch-models
+```
+
+> **模型素材不随仓库分发**：`assets/models/` 已列入 `.gitignore`，需要时自行执行上面那条命令拉取。
+> 狸宝用的白猫底层是 **Live2D 官方免费样本素材 tororo**（`model.json` 里的 `"name":"tororo"`），
+> 经 l2d-widget 作者换皮后托管在 `model.hacxy.cn`。素材版权归 Live2D Inc. 及原改编者所有，
+> 拉取后请遵守 Live2D 官方素材使用规约。未拉取时应用会回退到 CDN 加载，不影响使用。
+
 ### 配置 LLM（可选）
 
 设置环境变量：
@@ -74,10 +88,51 @@ npm run dist
 ### 设置面板
 
 右键托盘图标 → 设置，可配置：
-- 形象：模型路径、缩放、置顶
+- 形象：模型路径、缩放、置顶、开机自启
 - 人设：角色名、性格、语气、口头禅
 - 提醒：时间、文案
 - 对话：API 配置
+
+### 开机自启
+
+默认开启，注册在当前用户的 `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`，
+重启电脑后狸宝自己回来。可在设置面板或托盘菜单的“开机自启”勾选框关闭。
+
+> 注：开发态自启指向 `node_modules/electron/dist/electron.exe` + 项目路径，
+> 删除 `node_modules` 后自启会失效；打包后的 portable exe 不建议开自启（每次运行解压目录不同）。
+
+## 🔧 排查：狸宝没出现在桌面上？
+
+按这个顺序查，每一步都能单独定位一类问题：
+
+```powershell
+# 1) 进程在不在（没进程 = 根本没启动，npm start 即可）
+Get-Process electron | Where-Object { $_.Path -like '*desktop-pet*' }
+
+# 2) 窗口标题在不在（有进程无标题 = 窗口被 hide 了，点托盘恢复）
+Get-Process electron | Where-Object { $_.MainWindowTitle } | Select-Object Id,MainWindowTitle
+
+# 3) 窗口位置是否落在已不存在的屏幕上（双屏/改分辨率后会发生）
+Get-Content "$env:APPDATA\desktop-pet\settings.json" -Raw -Encoding UTF8 |
+  ConvertFrom-Json | Select-Object -Expand windowPosition
+```
+
+仍然不对，带日志启动看渲染链路：
+
+```powershell
+$env:ELECTRON_ENABLE_LOGGING="1"; npm start
+```
+
+关键日志含义：
+
+| 日志 | 含义 |
+|---|---|
+| `使用模型源: petres://...` | 走的本地内置模型 ✅ |
+| `使用模型源: https://model.hacxy.cn/...` | 本地模型缺失，回退到 CDN |
+| `模型源不可用，跳过: ...` | 该源拉不到，自动试下一个 |
+| `cat top=... bottom=...` | **猫真的画出来了**（像素级扫描）✅ |
+| `[window] 保存的位置 ... 已不在任何屏幕内` | 位置越界，已自动回到主屏右下角 |
+| `[tray] 图标缺失或为空` | 托盘图标看不见，运行 `npm run make-icon` |
 
 ## 🛠️ 技术栈
 
@@ -94,7 +149,7 @@ npm run dist
 desktop-pet/
 ├── src/
 │   ├── main/          # 主进程
-│   │   ├── main.js    # 窗口管理
+│   │   ├── main.js    # 窗口/托盘/自启/本地资源协议
 │   │   ├── store.js   # 配置存储
 │   │   ├── llm.js     # LLM 对话
 │   │   └── reminders.js # 提醒调度
@@ -105,14 +160,38 @@ desktop-pet/
 │   │   ├── bubble.css # 气泡样式
 │   │   └── settings.* # 设置面板
 │   └── preload.js     # 预加载脚本
+├── scripts/
+│   ├── fetch-models.mjs # 下载 Live2D 模型到 assets/models/
+│   └── make-icon.ps1    # 生成托盘图标 assets/icon.png
 ├── assets/
-│   └── vendor/        # 第三方库
+│   ├── models/        # 本地内置模型（离线兜底）
+│   ├── vendor/        # 第三方库
+│   └── icon.png       # 托盘图标
 └── package.json
 ```
+
+### 本地模型怎么加载的
+
+l2d-widget 内部用 `fetch()` 拉模型，而 `file://` 页面里 `fetch('file://...')` 会被 Chromium 拦掉。
+所以主进程注册了一个特权协议 `petres://`（见 `main.js` 的 `registerResProtocol`），
+把 `assets/` 目录映射为 `petres://models/cat-white/model.json`，本地模型才能走通。
 
 ### 配置版本管理
 
 `store.js` 中的 `CONFIG_VERSION` 用于管理配置结构变更。当默认配置更新时，递增版本号，旧配置会自动合并新默认值。
+注意：设置面板保存时必须把 `configVersion` 原样写回，否则每次启动都会被当成旧配置，
+用户改过的提醒/模型会被默认值覆盖。
+
+两条硬约束（都是踩过的坑）：
+
+1. **迁移只能按版本精准触发，且只能重置“由代码维护”的默认项**。像 `llm.apiKey` / `llm.baseURL` / `llm.model`
+   这类用户自己填的值不能碰——曾因为迁移把自建网关的模型改回 `gpt-3.5-turbo`，直接导致对话不可用。
+2. **读盘失败时禁止写回**。`getAll()` 解析失败会降级返回默认值，如果此时还允许 `setAll()` 落盘，
+   就会把用户的完整配置整片冲掉。现在会先把坏文件备份为 `settings.json.bad-<内容哈希>`（同一份坏内容只备一份），
+   然后拒绝写入，设置面板会提示“保存失败”而不是误报“已保存”。
+
+> 改 `settings.json` 不要用 PowerShell `Set-Content -Encoding UTF8`，它会写 BOM。
+> 现在 BOM 已被兼容，但手写 JSON 仍建议用 `[IO.File]::WriteAllText($p, $json, (New-Object System.Text.UTF8Encoding($false)))`。
 
 ## 🔒 安全说明
 

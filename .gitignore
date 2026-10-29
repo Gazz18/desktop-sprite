@@ -36,3 +36,7 @@ build/
 # Temporary files
 *.tmp
 *.temp
+
+# Live2D 模型素材由 npm run fetch-models 拉取，不随仓库分发
+# （白猫实为 Live2D 官方免费样本素材 tororo，再分发受素材使用规约限制）
+assets/models/

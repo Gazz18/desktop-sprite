@@ -8,10 +8,17 @@ async function init() {
   try {
     settings = await window.desktopPet.getSettings();
 
-    await initLive2D();
+    // 模型源探活后再渲染，避免“透明窗口里什么也没有”的假死
+    const modelPath = await pickModelPath(settings.appearance?.modelCandidates);
+    if (modelPath) {
+      await initLive2D(modelPath);
+    } else {
+      console.error('所有模型源都不可用');
+    }
+
     initBubble();
     initChat();
-    scheduleIdleMotion();  // 空闲时随机/定时播放狸宝自带的动作
+    if (modelPath) scheduleIdleMotion();  // 空闲时随机/定时播放狸宝自带的动作
 
     // 点击输入框/猫以外的区域（如拖拽条、空白）→ 收起输入框
     document.addEventListener('click', (e) => {
@@ -20,12 +27,47 @@ async function init() {
     });
 
     setTimeout(() => {
+      if (!modelPath) {
+        showBubble('模型加载不出来…先跑一下 npm run fetch-models 或看看网络喵');
+        return;
+      }
       startIdleChat();  // 随机开场白，并进入待机闲聊循环（不再固定"你好呀~"）
     }, 1800);
   } catch (err) {
     console.error('Init failed:', err);
     showBubble('我这边出了点问题，打不起来了…');
   }
+}
+
+// l2d-widget 加载模型失败不会抛异常，只会画一只全透明的猫，看上去就是“没加载”。
+// 因此先按候选顺序（本地内置 → 远程 CDN）用 fetch 探活，选第一个能拉到的。
+async function probeModelSource(url, timeoutMs = 4000) {
+  try {
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), timeoutMs);
+    const res = await fetch(url, { signal: ctl.signal });
+    clearTimeout(timer);
+    return res.ok;
+  } catch (e) {
+    console.warn('模型源探测失败:', url, e.message);
+    return false;
+  }
+}
+
+async function pickModelPath(candidates) {
+  const list = Array.from(new Set([
+    ...(Array.isArray(candidates) ? candidates : []),
+    settings?.appearance?.modelPath
+  ].filter(Boolean)));
+
+  for (const p of list) {
+    if (await probeModelSource(p)) {
+      console.log('使用模型源:', p);
+      return p;
+    }
+    console.warn('模型源不可用，跳过:', p);
+  }
+  return null;
 }
 
 // 输入框显隐（热点触发显示，其他情况收起）
@@ -42,14 +84,14 @@ function hideInput() {
 // Live2D 初始化
 // l2d-widget 的 createWidget 只接收 config 一个参数，会自行创建 position:fixed
 // 容器挂到 document.body，并忽略外部传入的 canvas。
-async function initLive2D() {
+async function initLive2D(modelPath) {
   const bodySnapshot = new Set(Array.from(document.body.children));
 
   widget = window.L2D_WIDGET.createWidget({
     position: 'bottom-left',
     size: 300,
     model: [{
-      path: settings.appearance.modelPath,
+      path: modelPath,
       tips: false  // 关闭内置蓝色 tips 气泡（需求2）
     }],
     menus: { items: [] }
