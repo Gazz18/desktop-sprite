@@ -203,10 +203,15 @@ l2d-widget 内部用 `fetch()` 拉模型，而 `file://` 页面里 `fetch('file:
 
 MIT License
 
+> 注意区分三层许可：本仓库代码为 MIT；`assets/vendor/l2d-widget.min.js` 是上游 MIT 产物
+> （许可证全文与来源指纹见 [assets/vendor/NOTICE.md](./assets/vendor/NOTICE.md)）；
+> 而这个 bundle 里打包的 **Live2D Cubism 运行时**、以及 `npm run fetch-models` 拉取的
+> **模型素材**，都归 Live2D Inc. 的许可约束，不在 MIT 范围内。
+
 ## 🙏 致谢
 
-- [Live2D](https://www.live2d.com/) - 2D 动画技术
-- [l2d-widget](https://github.com/niconi123/l2d-widget) - Live2D Widget 实现
+- [Live2D](https://www.live2d.com/) - 2D 动画技术（Cubism 运行时与样本素材受 Live2D 官方许可约束）
+- [l2d-widget](https://github.com/hacxy/l2d-widget) - Live2D Widget 实现（Hacxy，MIT）
 - [Electron](https://www.electronjs.org/) - 桌面应用框架
 
 ---
