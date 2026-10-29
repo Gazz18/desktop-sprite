@@ -26,6 +26,14 @@ Invoke-WebRequest "https://cdn.jsdelivr.net/npm/l2d-widget@0.1.2/dist/index.min.
 (Get-FileHash l2d-widget.min.js -Algorithm SHA256).Hash.ToLower()
 ```
 
+### 不要把它声明回 npm 依赖
+
+运行时只认这个 vendor 文件（`window.L2D_WIDGET`），全仓没有任何 `require/import 'l2d-widget'`。
+`package.json` 曾声明过该依赖，但升级 npm 包**不会**更新 vendor，两份会静默漂移，
+所以已移除，保持仓库内只有这一份拷贝。
+
+需要升版时：手工替换本文件 + 同步更新上面的版本号与 SHA256。
+
 ### ⚠️ 这个 bundle 里不只有 MIT 代码
 
 `l2d-widget` 自身是 MIT，但它把上游依赖 [`l2d`](https://github.com/hacxy/l2d) 以及
